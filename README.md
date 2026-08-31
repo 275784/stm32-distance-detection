@@ -48,6 +48,19 @@ Potentiometer ───────────► ADC                  │
 5. The object is detected when the difference is within the configured tolerance.
 6. The current distance, target distance, tolerance and detection status are displayed on the LCD.
 
+## My Contribution
+
+This was an individual project.
+
+I designed and implemented:
+
+- HC-SR04 distance measurement
+- rotary encoder handling
+- I2C LCD interface
+- ADC-based tolerance adjustment
+- distance detection logic
+- modular firmware structure
+
 ## Hardware & Technologies
 
 ### Hardware
