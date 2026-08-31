@@ -2,6 +2,7 @@
 Debug/
 Release/
 
+# STM32CubeIDE settings
 .settings/
 
 # Compiled files
