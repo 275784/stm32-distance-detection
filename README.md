@@ -17,40 +17,52 @@ The system allows the user to configure a target distance and tolerance range us
 - STM32 HAL-based implementation
 
 ## System Architecture
-                   ┌──────────────────────┐
-                   │      STM32L152       │
-                   │    Microcontroller   │
-                   │                      │
-                   │  Timer Input Capture │
-                   │  Timer Encoder       │
-                   │  ADC                 │
-                   │  I2C                 │
-                   │  UART                │
-                   └──────────┬───────────┘
-                              │
-          ┌───────────────────┼───────────────────┐
-          │                   │                   │
-          ▼                   ▼                   ▼
-      HC-SR04            Rotary Encoder      Potentiometer
-   Distance Sensor       Target Distance       Tolerance
-          │
-          │
-          └───────────────────┐
-                              │
-                              ▼
-                      Detection Logic
-                              │
-                              ▼
-                          I2C LCD
+
+The system consists of three main input devices connected to the STM32L152:
+
+- **HC-SR04** — measures the distance to an object
+- **Rotary encoder** — sets the target distance
+- **Potentiometer** — sets the detection tolerance
+
+The STM32 processes the incoming data and determines whether an object is located within the configured distance range. The current measurement and detection status are displayed on the I2C LCD.
+
+### Data Flow
+
+```text
+HC-SR04 ───────────────┐
+                       │
+Rotary Encoder ────────┼───► STM32L152 ───► Detection Logic ───► I2C LCD
+                       │
+Potentiometer ─────────┘
+```
+
+### STM32 Peripherals
+
+```text
+                         ┌─────────────────────┐
+                         │     STM32L152       │
+                         │    Microcontroller  │
+                         ├─────────────────────┤
+HC-SR04 ─────────────────► Timer Input Capture │
+                         │                     │
+Rotary Encoder ──────────► Timer Encoder       │
+                         │                     │
+Potentiometer ───────────► ADC                 │
+                         │                     │
+                         │ I2C ────────────────┼────► LCD
+                         │                     │
+                         │ UART                │
+                         └─────────────────────┘
+```
 
 ## How It Works
 
-1. The rotary encoder is used to select the target distance.
+1. The rotary encoder is used to set the target distance.
 2. The potentiometer sets the allowed tolerance.
 3. The HC-SR04 periodically measures the distance to an object.
-4. The STM32 compares the measured distance with the configured target.
-5. If the measured distance is within the allowed tolerance, the system reports object detection.
-6. The current measurement and configuration are displayed on the LCD.
+4. The STM32 calculates the difference between the measured distance and the target distance.
+5. If the measured distance is within the configured tolerance, the object is considered detected.
+6. The current distance, target distance, tolerance and detection status are displayed on the LCD.
 
 ## Hardware
 
@@ -78,7 +90,7 @@ The system allows the user to configure a target distance and tolerance range us
 ## Firmware Structure
 
 The firmware is divided into separate modules:
-
+```
 Core/
 ├── Inc/
 │   ├── encoder.h
@@ -91,7 +103,7 @@ Core/
     ├── hcsr04.c
     ├── i2c-lcd.c
     └── main.c
-
+```
 ### HCSR04 Driver
 
 The `hcsr04.c/.h` module handles the ultrasonic sensor.
