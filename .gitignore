@@ -2,6 +2,8 @@
 Debug/
 Release/
 
+.settings/
+
 # Compiled files
 *.o
 *.elf
